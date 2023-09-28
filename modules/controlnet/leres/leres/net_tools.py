@@ -29,7 +29,7 @@ def load_ckpt(args, depth_model, shift_model, focal_model):
     Load checkpoint.
     """
     if os.path.isfile(args.load_ckpt):
-        print("loading checkpoint %s" % args.load_ckpt)
+        print(f"loading checkpoint {args.load_ckpt}")
         checkpoint = torch.load(args.load_ckpt)
         if shift_model is not None:
             shift_model.load_state_dict(strip_prefix_if_present(checkpoint['shift_model'], 'module.'),

@@ -68,10 +68,7 @@ class SeargePreviewImage(nodes.SaveImage):
 
     def preview_images(self, enabled, images=None, prompt=None, extra_pnginfo=None):
         if images is None or not enabled:
-            return {
-                "result": (images,),
-                "ui": {"images": list(), },
-            }
+            return {"result": (images,), "ui": {"images": []}}
 
         saved_images = nodes.SaveImage.save_images(self, images, "srg_sdxl_preview", prompt, extra_pnginfo)
         saved_images["result"] = (images,)

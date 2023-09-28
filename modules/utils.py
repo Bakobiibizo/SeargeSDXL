@@ -95,8 +95,7 @@ def slerp(factor, input1, input2):
 
 
 def slerp_latents(latent1, latent2, factor):
-    result = slerp(factor, latent1.clone(), latent2.clone())
-    return result
+    return slerp(factor, latent1.clone(), latent2.clone())
 
 
 def bilateral_blur(inp, kernel_size, sigma_color, sigma_space, border_type='reflect', color_distance_type='l1'):
@@ -111,21 +110,17 @@ def bilateral_blur(inp, kernel_size, sigma_color, sigma_space, border_type='refl
     unfolded_input = padded_input.unfold(2, ky, 1).unfold(3, kx, 1).flatten(-2)  # (B, C, H, W, Ky x Kx)
 
     diff = unfolded_input - inp.unsqueeze(-1)
-    if color_distance_type == "l1":
+    if color_distance_type == "l1" or color_distance_type != "l2":
         color_distance_sq = diff.abs().sum(1, keepdim=True).square()
-    elif color_distance_type == "l2":
-        color_distance_sq = diff.square().sum(1, keepdim=True)
     else:
-        color_distance_sq = diff.abs().sum(1, keepdim=True).square()
-
+        color_distance_sq = diff.square().sum(1, keepdim=True)
     color_kernel = (-0.5 / sigma_color ** 2 * color_distance_sq).exp()  # (B, 1, H, W, Ky x Kx)
 
     space_kernel = get_gaussian_kernel2d(kernel_size, sigma_space, inp.device, inp.dtype)
     space_kernel = space_kernel.view(-1, 1, 1, 1, kx * ky)
 
     kernel = space_kernel * color_kernel
-    out = (unfolded_input * kernel).sum(-1) / kernel.sum(-1)
-    return out
+    return (unfolded_input * kernel).sum(-1) / kernel.sum(-1)
 
 
 def _unpack_2d_ks(kernel_size):

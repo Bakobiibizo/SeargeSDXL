@@ -35,7 +35,7 @@ from .ui import UI
 
 class SeargeTextInputV2:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {
             "required": {
                 "prompt": ("STRING", {"default": "", "multiline": True},),

@@ -51,7 +51,7 @@ class SeargeControlnetAdapterV2:
         self.leres_annotator_full_path = get_full_path("annotators", self.leres_annotator)
 
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {
             "required": {
                 "controlnet_mode": (UI.CONTROLNET_MODES, {"default": UI.NONE},),
@@ -86,10 +86,6 @@ class SeargeControlnetAdapterV2:
         elif mode == UI.CN_MODE_SKETCH:
             image = hed(image, self.hed_annotator_full_path)
 
-        else:
-            # do nothing for any other mode, just use the provided image unchanged
-            pass
-
         return image
 
     def create_dict(self, stack, source_image, controlnet_mode, controlnet_preprocessor, strength,
@@ -103,7 +99,7 @@ class SeargeControlnetAdapterV2:
         high_threshold = round(high_threshold, 3)
 
         # NOTE: for the modes "revision" and "custom" no image pre-processing is needed
-        if controlnet_mode == UI.CN_MODE_REVISION or controlnet_mode == UI.CUSTOM:
+        if controlnet_mode in [UI.CN_MODE_REVISION, UI.CUSTOM]:
             controlnet_preprocessor = False
 
         if controlnet_preprocessor and cn_image is not None:

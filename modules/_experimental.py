@@ -37,22 +37,37 @@ class SeargeSamplerAdvanced:
     UPSCALE_METHODS = ["nearest-exact", "bilinear", "area", "bicubic", "bislerp"]
 
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {
             "required": {
                 "model": ("MODEL",),
-                "noise_seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                "noise_seed": (
+                    "INT",
+                    {"default": 0, "min": 0, "max": 0xFFFFFFFFFFFFFFFF},
+                ),
                 "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
-                "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0, "step": 0.5}),
+                "cfg": (
+                    "FLOAT",
+                    {"default": 8.0, "min": 0.0, "max": 100.0, "step": 0.5},
+                ),
                 "sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
                 "scheduler": (comfy.samplers.KSampler.SCHEDULERS,),
                 "positive": ("CONDITIONING",),
                 "negative": ("CONDITIONING",),
                 "latent_image": ("LATENT",),
-                "denoise": ("FLOAT", {"default": 1.0, "min": 0.05, "max": 1.0, "step": 0.05}),
-                "scale_factor": ("FLOAT", {"default": 1.5, "min": 1.0, "max": 2.0, "step": 0.5}),
-                "scale_denoise": ("FLOAT", {"default": 0.75, "min": 0.05, "max": 1.0, "step": 0.05}),
-                "scale_method": (s.UPSCALE_METHODS,),
+                "denoise": (
+                    "FLOAT",
+                    {"default": 1.0, "min": 0.05, "max": 1.0, "step": 0.05},
+                ),
+                "scale_factor": (
+                    "FLOAT",
+                    {"default": 1.5, "min": 1.0, "max": 2.0, "step": 0.5},
+                ),
+                "scale_denoise": (
+                    "FLOAT",
+                    {"default": 0.75, "min": 0.05, "max": 1.0, "step": 0.05},
+                ),
+                "scale_method": (cls.UPSCALE_METHODS,),
             }
         }
 
@@ -139,7 +154,7 @@ def gaussian_latent_noise(width=128, height=128, seed=-1, fac=0.5, batch_size=1,
     limit = limit[ver]
 
     out = []
-    for i in range(batch_size):
+    for _ in range(batch_size):
         if srnd:  # shared random
             rand = torch.rand([height, width])
             lat = torch.stack([

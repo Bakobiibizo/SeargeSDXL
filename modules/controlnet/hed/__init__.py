@@ -21,7 +21,7 @@ class DoubleConvBlock(torch.nn.Module):
         super().__init__()
         self.convs = torch.nn.Sequential()
         self.convs.append(torch.nn.Conv2d(in_channels=input_channel, out_channels=output_channel, kernel_size=(3, 3), stride=(1, 1), padding=1))
-        for i in range(1, layer_number):
+        for _ in range(1, layer_number):
             self.convs.append(torch.nn.Conv2d(in_channels=output_channel, out_channels=output_channel, kernel_size=(3, 3), stride=(1, 1), padding=1))
         self.projection = torch.nn.Conv2d(in_channels=output_channel, out_channels=1, kernel_size=(1, 1), stride=(1, 1), padding=0)
 

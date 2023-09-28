@@ -168,12 +168,7 @@ class SeargePreProcessData:
             mask_changed = access.changed_in_pipeline(Names.P_MASK)
             changed_in_cache = access.changed_in_cache(Names.C_BLURRY_MASK, parameters)
 
-            any_changes = (
-                    mask_changed or
-                    changed_in_cache
-            )
-
-            if any_changes:
+            if any_changes := (mask_changed or changed_in_cache):
                 mask = access.get_from_pipeline(Names.P_MASK)
                 if mask is not None and mask_blur > 0 and changed_in_cache:
                     mask = NodeWrapper.mask_to_image.mask_to_image(mask)[0]

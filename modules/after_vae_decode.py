@@ -37,7 +37,7 @@ from .ui import UI
 
 class SeargeCustomAfterVaeDecode:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {
             "required": {
                 "custom_output": ("SRG_STAGE_OUTPUT",),

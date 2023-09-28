@@ -78,7 +78,7 @@ class SeargeStageLatentInputs:
         precondition_strength = access.get_active_setting(UI.S_CONDITIONING_PARAMETERS, UI.F_PRECONDITION_STRENGTH, 0.1)
 
         latent = None
-        if workflow_mode == UI.WF_MODE_IMAGE_TO_IMAGE or workflow_mode == UI.WF_MODE_IN_PAINTING:
+        if workflow_mode in [UI.WF_MODE_IMAGE_TO_IMAGE, UI.WF_MODE_IN_PAINTING]:
             parameters = [
                 image_width,
                 image_height,
@@ -173,8 +173,9 @@ class SeargeStageLatentInputs:
                 precondition_strength,
             ]
 
-            empty_latent_changed = access.changed_in_cache(Names.C_EMPTY_LATENT, parameters)
-            if empty_latent_changed:
+            if empty_latent_changed := access.changed_in_cache(
+                Names.C_EMPTY_LATENT, parameters
+            ):
                 if precondition_mode == UI.NONE or precondition_strength < 0.001:
                     latent = NodeWrapper.empty_latent.generate(image_width, image_height, batch_size)[0]
                 elif precondition_mode == UI.PRECONDITION_MODE_GAUSSIAN:
