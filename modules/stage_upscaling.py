@@ -105,34 +105,43 @@ class SeargeStageUpscaling:
             new_width = next_multiple_of(image_width * upscale_factor, self.SIZE_MULTIPLE_OF)
             new_height = next_multiple_of(image_height * upscale_factor, self.SIZE_MULTIPLE_OF)
 
-            if upscale_factor > 1.0 and image is not None:
-                if primary_upscaler is not None and secondary_upscaler is not None:
-                    image1 = NodeWrapper.scale_with_model.upscale(primary_upscaler, image)[0]
-                    (scaled_width1, scaled_height1) = get_image_size(image1)
-                    if scaled_width1 != 4 * image_width or scaled_height1 != 4 * image_height:
-                        print("Warning: primary upscaler should be a 4x ESRGAN model")
+            if (
+                upscale_factor > 1.0
+                and image is not None
+                and primary_upscaler is not None
+                and secondary_upscaler is not None
+            ):
+                image1 = NodeWrapper.scale_with_model.upscale(primary_upscaler, image)[0]
+                (scaled_width1, scaled_height1) = get_image_size(image1)
+                if scaled_width1 != 4 * image_width or scaled_height1 != 4 * image_height:
+                    print("Warning: primary upscaler should be a 4x ESRGAN model")
 
-                    image2 = NodeWrapper.scale_with_model.upscale(secondary_upscaler, image)[0]
-                    (scaled_width2, scaled_height2) = get_image_size(image2)
-                    if scaled_width2 != 4 * image_width or scaled_height2 != 4 * image_height:
-                        print("Warning: secondary upscaler should be a 4x ESRGAN model")
+                image2 = NodeWrapper.scale_with_model.upscale(secondary_upscaler, image)[0]
+                (scaled_width2, scaled_height2) = get_image_size(image2)
+                if scaled_width2 != 4 * image_width or scaled_height2 != 4 * image_height:
+                    print("Warning: secondary upscaler should be a 4x ESRGAN model")
 
-                    image = NodeWrapper.image_blend.blend_images(image1, image2, 0.2, "normal")[0]
+                image = NodeWrapper.image_blend.blend_images(image1, image2, 0.2, "normal")[0]
 
-                elif primary_upscaler is not None:
-                    image = NodeWrapper.scale_with_model.upscale(primary_upscaler, image)[0]
-                    (scaled_width, scaled_height) = get_image_size(image)
-                    if scaled_width != 4 * image_width or scaled_height != 4 * image_height:
-                        print("Warning: primary upscaler should be a 4x ESRGAN model")
+            elif (
+                upscale_factor > 1.0
+                and image is not None
+                and primary_upscaler is not None
+            ):
+                image = NodeWrapper.scale_with_model.upscale(primary_upscaler, image)[0]
+                (scaled_width, scaled_height) = get_image_size(image)
+                if scaled_width != 4 * image_width or scaled_height != 4 * image_height:
+                    print("Warning: primary upscaler should be a 4x ESRGAN model")
 
-                elif secondary_upscaler is not None:
-                    image = NodeWrapper.scale_with_model.upscale(secondary_upscaler, image)[0]
-                    (scaled_width, scaled_height) = get_image_size(image)
-                    if scaled_width != 4 * image_width or scaled_height != 4 * image_height:
-                        print("Warning: secondary upscaler should be a 4x ESRGAN model")
-
-                else:
-                    image = None
+            elif (
+                upscale_factor > 1.0
+                and image is not None
+                and secondary_upscaler is not None
+            ):
+                image = NodeWrapper.scale_with_model.upscale(secondary_upscaler, image)[0]
+                (scaled_width, scaled_height) = get_image_size(image)
+                if scaled_width != 4 * image_width or scaled_height != 4 * image_height:
+                    print("Warning: secondary upscaler should be a 4x ESRGAN model")
 
             else:
                 image = None

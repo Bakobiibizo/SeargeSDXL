@@ -27,7 +27,7 @@ def HWC3(x):
     assert x.ndim == 3
 
     H, W, C = x.shape
-    assert C == 1 or C == 3 or C == 4
+    assert C in [1, 3, 4]
 
     if C == 3:
         return x

@@ -37,7 +37,7 @@ from .ui import UI
 
 class SeargeSDXLSamplerV4Outputs:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {
             "required": {
             },
@@ -67,7 +67,4 @@ class SeargeSDXLSamplerV4Outputs:
 
     def output(self, data=None, sampler_output=None):
         (has_data, output) = self.get_data(data, sampler_output)
-        if not has_data:
-            return (data, None,)
-
-        return (data, output[Names.LATENT_IMAGE],)
+        return (data, None) if not has_data else (data, output[Names.LATENT_IMAGE])

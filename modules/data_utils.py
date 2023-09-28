@@ -31,23 +31,19 @@ SOFTWARE.
 
 def retrieve_input(name, data, stage_input):
     if stage_input is not None and name in stage_input:
-        result = stage_input[name]
+        return stage_input[name]
     elif data is not None and name in data:
-        result = data[name]
+        return data[name]
     else:
-        result = None
-
-    return result
+        return None
 
 
 # --------------------------------------------------------------------------------
 
 def retrieve_parameter(name, structure, default=None):
     if structure is None:
-        result = default
+        return default
     elif name in structure and structure[name] is not None:
-        result = structure[name]
+        return structure[name]
     else:
-        result = default
-
-    return result
+        return default

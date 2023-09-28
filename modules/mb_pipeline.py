@@ -124,10 +124,7 @@ class PipelineAccess:
         if name in retrieve_parameter("new_overrides", self.pipeline, {}):
             return True
 
-        if name in retrieve_parameter("new_settings", self.pipeline, {}):
-            return True
-
-        return False
+        return name in retrieve_parameter("new_settings", self.pipeline, {})
 
     def get_effective_structure(self, name):
         if not self.has_structure(name):

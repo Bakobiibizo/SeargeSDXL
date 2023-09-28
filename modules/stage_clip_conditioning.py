@@ -271,15 +271,8 @@ class SeargeStageClipConditioning:
                 base_pos_main = pos_style.replace(self.PROMPT_PLACEHOLDER, main)
                 base_pos_sec = pos_style.replace(self.PROMPT_PLACEHOLDER, secondary)
             else:
-                if len(main) > 0:
-                    base_pos_main = main + ". " + pos_style
-                else:
-                    base_pos_main = pos_style
-
-                if len(secondary) > 0:
-                    base_pos_sec = secondary + ". " + pos_style
-                else:
-                    base_pos_sec = pos_style
+                base_pos_main = f"{main}. {pos_style}" if len(main) > 0 else pos_style
+                base_pos_sec = f"{secondary}. {pos_style}" if len(secondary) > 0 else pos_style
         else:
             base_pos_main = main
             base_pos_sec = secondary
@@ -291,15 +284,12 @@ class SeargeStageClipConditioning:
             if pos_style.find(self.PROMPT_PLACEHOLDER) >= 0:
                 ref_pos = pos_style.replace(self.PROMPT_PLACEHOLDER, main)
             else:
-                if len(main) > 0:
-                    ref_pos = main + ". " + pos_style
-                else:
-                    ref_pos = pos_style
+                ref_pos = f"{main}. {pos_style}" if len(main) > 0 else pos_style
         else:
             ref_pos = main
 
         if len(neg_main) > 0 and len(neg_secondary) > 0:
-            ref_neg = neg_main + ". " + neg_secondary
+            ref_neg = f"{neg_main}. {neg_secondary}"
         elif len(neg_main) > 0:
             ref_neg = neg_main
         elif len(neg_secondary) > 0:
@@ -312,8 +302,18 @@ class SeargeStageClipConditioning:
         ref_pos_style = base_pos_style
         ref_neg_style = base_neg_style
 
-        return (base_pos_main, base_pos_sec, base_pos_style, base_neg_main, base_neg_sec, base_neg_style,
-                ref_pos, ref_pos_style, ref_neg, ref_neg_style)
+        return (
+            base_pos_main,
+            base_pos_sec,
+            ref_pos_style,
+            base_neg_main,
+            base_neg_sec,
+            ref_neg_style,
+            ref_pos,
+            ref_pos_style,
+            ref_neg,
+            ref_neg_style,
+        )
 
     def create_pass_through_prompts(self, main, secondary, style_prompt, neg_main, neg_secondary, neg_style):
         base_pos_main = main
@@ -325,7 +325,7 @@ class SeargeStageClipConditioning:
         base_neg_style = neg_style
 
         if len(main) > 0 and len(secondary) > 0:
-            ref_pos = main + ". " + secondary
+            ref_pos = f"{main}. {secondary}"
         elif len(main) > 0:
             ref_pos = main
         elif len(secondary) > 0:
@@ -336,7 +336,7 @@ class SeargeStageClipConditioning:
         ref_pos_style = style_prompt
 
         if len(neg_main) > 0 and len(neg_secondary) > 0:
-            ref_neg = neg_main + ". " + neg_secondary
+            ref_neg = f"{neg_main}. {neg_secondary}"
         elif len(neg_main) > 0:
             ref_neg = neg_main
         elif len(neg_secondary) > 0:

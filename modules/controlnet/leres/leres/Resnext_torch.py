@@ -133,8 +133,9 @@ class ResNet(nn.Module):
             # the 2x2 stride with a dilated convolution instead
             replace_stride_with_dilation = [False, False, False]
         if len(replace_stride_with_dilation) != 3:
-            raise ValueError("replace_stride_with_dilation should be None "
-                             "or a 3-element tuple, got {}".format(replace_stride_with_dilation))
+            raise ValueError(
+                f"replace_stride_with_dilation should be None or a 3-element tuple, got {replace_stride_with_dilation}"
+            )
         self.groups = groups
         self.base_width = width_per_group
         self.conv1 = nn.Conv2d(3, self.inplanes, kernel_size=7, stride=2, padding=3,
@@ -182,28 +183,40 @@ class ResNet(nn.Module):
                 norm_layer(planes * block.expansion),
             )
 
-        layers = []
-        layers.append(block(self.inplanes, planes, stride, downsample, self.groups,
-                            self.base_width, previous_dilation, norm_layer))
+        layers = [
+            block(
+                self.inplanes,
+                planes,
+                stride,
+                downsample,
+                self.groups,
+                self.base_width,
+                previous_dilation,
+                norm_layer,
+            )
+        ]
         self.inplanes = planes * block.expansion
-        for _ in range(1, blocks):
-            layers.append(block(self.inplanes, planes, groups=self.groups,
-                                base_width=self.base_width, dilation=self.dilation,
-                                norm_layer=norm_layer))
-
+        layers.extend(
+            block(
+                self.inplanes,
+                planes,
+                groups=self.groups,
+                base_width=self.base_width,
+                dilation=self.dilation,
+                norm_layer=norm_layer,
+            )
+            for _ in range(1, blocks)
+        )
         return nn.Sequential(*layers)
 
     def _forward_impl(self, x):
-        # See note [TorchScript super()]
-        features = []
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
         x = self.maxpool(x)
 
         x = self.layer1(x)
-        features.append(x)
-
+        features = [x]
         x = self.layer2(x)
         features.append(x)
 
@@ -232,6 +245,5 @@ def resnext101_32x8d(pretrained=True, **kwargs):
     kwargs['groups'] = 32
     kwargs['width_per_group'] = 8
 
-    model = ResNet(Bottleneck, [3, 4, 23, 3], **kwargs)
-    return model
+    return ResNet(Bottleneck, [3, 4, 23, 3], **kwargs)
 

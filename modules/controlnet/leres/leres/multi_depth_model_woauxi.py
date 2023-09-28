@@ -17,9 +17,7 @@ class RelDepthModel(nn.Module):
     def inference(self, rgb):
         with torch.no_grad():
             input = rgb.to(self.depth_model.device)
-            depth = self.depth_model(input)
-            #pred_depth_out = depth - depth.min() + 0.01
-            return depth #pred_depth_out
+            return self.depth_model(input)
 
 
 class DepthModel(nn.Module):
@@ -36,5 +34,4 @@ class DepthModel(nn.Module):
 
     def forward(self, x):
         lateral_out = self.encoder_modules(x)
-        out_logit = self.decoder_modules(lateral_out)
-        return out_logit
+        return self.decoder_modules(lateral_out)

@@ -38,7 +38,7 @@ from .ui import UI
 
 class SeargeSDXLSamplerV4:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {
             "required": {
             },

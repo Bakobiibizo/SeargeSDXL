@@ -117,12 +117,12 @@ class SeargeMagicBox:
         self.stage_ = None
 
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {
             "required": {
-                "stage": (s.STAGES, {"default": s.NONE},),
-                "input_from": (s.INPUT_OUTPUT,),
-                "output_to": (s.INPUT_OUTPUT,),
+                "stage": (cls.STAGES, {"default": cls.NONE}),
+                "input_from": (cls.INPUT_OUTPUT,),
+                "output_to": (cls.INPUT_OUTPUT,),
             },
             "optional": {
                 "data": ("SRG_DATA_STREAM",),
@@ -233,7 +233,7 @@ class SeargeMagicBox:
             stage_processor = self.stage_image_saving
 
         else:
-            print("WARNING: implementation for stage " + stage + " is missing!")
+            print(f"WARNING: implementation for stage {stage} is missing!")
 
         # no stage processor exists, so no processing can happen and no result exists
         if stage_processor is None:
@@ -257,22 +257,13 @@ class SeargeMagicBox:
         if data is None:
             data = {}
 
-        stage_input = None
-        custom_output = None
-
-        # input from custom stage ?
-        if input_from == self.CUSTOM_AND_DATA:
-            stage_input = custom_input
-
+        stage_input = custom_input if input_from == self.CUSTOM_AND_DATA else None
         # if no stage data is provided, the stage will take it from the data stream
         if PipelineAccess(data).is_pipeline_enabled():  # or stage == self.LOAD_CHECKPOINTS:
             (data, stage_result) = self.run_stage(stage, data, stage_input)
         else:
             stage_result = None
 
-        # output to custom stage ?
-        if output_to == self.CUSTOM_AND_DATA:
-            custom_output = stage_result
-
+        custom_output = stage_result if output_to == self.CUSTOM_AND_DATA else None
         # the result will always be on the data stream, so even without custom output it will be passed on
         return (data, custom_output,)

@@ -52,7 +52,7 @@ def generatemask(size):
     sigma = int(size[0]/16)
     k_size = int(2 * np.ceil(2 * int(size[0]/16)) + 1)
     mask[int(0.15*size[0]):size[0] - int(0.15*size[0]), int(0.15*size[1]): size[1] - int(0.15*size[1])] = 1
-    mask = cv2.GaussianBlur(mask, (int(k_size), int(k_size)), sigma)
+    mask = cv2.GaussianBlur(mask, (k_size, k_size), sigma)
     mask = (mask - mask.min()) / (mask.max() - mask.min())
     mask = mask.astype(np.float32)
     return mask
@@ -61,8 +61,7 @@ def resizewithpool(img, size):
     i_size = img.shape[0]
     n = int(np.floor(i_size/size))
 
-    out = block_reduce(img, (n, n), np.max)
-    return out
+    return block_reduce(img, (n, n), np.max)
 
 def rgb2gray(rgb):
     # Converts rgb to gray
@@ -84,7 +83,7 @@ def calculateprocessingres(img, basesize, confidence=0.1, scale_threshold=3, who
 
     # speed scale parameter is to process every image in a smaller size to accelerate the R_x resolution search
     speed_scale = 32
-    image_dim = int(min(img.shape[0:2]))
+    image_dim = int(min(img.shape[:2]))
 
     gray = rgb2gray(img)
     grad = np.abs(cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize=3)) + np.abs(cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=3))
@@ -177,8 +176,12 @@ def getGF_fromintegral(integralimage, rect):
     x2 = rect[1]+rect[3]
     y1 = rect[0]
     y2 = rect[0]+rect[2]
-    value = integralimage[x2, y2]-integralimage[x1, y2]-integralimage[x2, y1]+integralimage[x1, y1]
-    return value
+    return (
+        integralimage[x2, y2]
+        - integralimage[x1, y2]
+        - integralimage[x2, y1]
+        + integralimage[x1, y1]
+    )
 
 def impatch(image, rect):
     # Extract the given patch pixels from a given image.
@@ -186,8 +189,7 @@ def impatch(image, rect):
     h1 = rect[1]
     w2 = w1 + rect[2]
     h2 = h1 + rect[3]
-    image_patch = image[h1:h2, w1:w2]
-    return image_patch
+    return image[h1:h2, w1:w2]
 
 class ImageandPatchs:
     def __init__(self, root_dir, name, patchsinfo, rgb_image, scale=1):
@@ -243,8 +245,7 @@ class ImageandPatchs:
         It will print both current options and default values(if different).
         It will save options into a text file / [checkpoints_dir] / opt.txt
         """
-        message = ''
-        message += '----------------- Options ---------------\n'
+        message = '' + '----------------- Options ---------------\n'
         for k, v in sorted(vars(opt).items()):
             comment = ''
             default = self.parser.get_default(k)
@@ -271,7 +272,7 @@ class ImageandPatchs:
 
         # process opt.suffix
         if opt.suffix:
-            suffix = ('_' + opt.suffix.format(**vars(opt))) if opt.suffix != '' else ''
+            suffix = f'_{opt.suffix.format(**vars(opt))}' if opt.suffix != '' else ''
             opt.name = opt.name + suffix
 
         #self.print_options(opt)
@@ -314,9 +315,7 @@ def view_as_blocks(arr_in, block_shape):
     new_shape = tuple(arr_shape // block_shape) + tuple(block_shape)
     new_strides = tuple(arr_in.strides * block_shape) + arr_in.strides
 
-    arr_out = as_strided(arr_in, shape=new_shape, strides=new_strides)
-
-    return arr_out
+    return as_strided(arr_in, shape=new_shape, strides=new_strides)
 
 
 def block_reduce(image, block_size=2, func=np.sum, cval=0, func_kwargs=None):

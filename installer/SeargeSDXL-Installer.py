@@ -269,8 +269,6 @@ def install_searge_sdxl():
             print("The command 'git fetch' failed, please restart the install script to try again")
             return False
 
-        os.chdir(old_cwd)
-
     else:
         os.chdir(extensions_folder)
 
@@ -281,7 +279,7 @@ def install_searge_sdxl():
                   "restart the install script to try again")
             return False
 
-        os.chdir(old_cwd)
+    os.chdir(old_cwd)
 
     print("\nUsually the release branch has the latest stable version and the test branch has the latest "
           "test version.")
@@ -340,10 +338,7 @@ def install_models():
             info1 = ""
 
         if len(recommended) > 0:
-            if default == "q":
-                info2 = "[r]ecommended+required, "
-            else:
-                info2 = "[r]ecommended, "
+            info2 = "[r]ecommended+required, " if default == "q" else "[r]ecommended, "
             ids += ["r"]
             default = "r"
         else:
@@ -392,24 +387,24 @@ def im_show_model_status():
 
         folder = model["folder"]
         filename = model["filename"]
-        importance = model["importance"]
-
         full_path = models_folder.joinpath(folder).joinpath(filename)
         if Path.exists(full_path):
             print(f"[  ] - already installed: {folder}/{filename}")
         else:
             ids.append(str(i))
-            if importance == "required":
-                print(f"[{i:2}] - *** required *** : {folder}/{filename}")
-                required.append(model)
+            importance = model["importance"]
+
+            if importance == "optional":
+                print(f"[{i:2}] -   ( optional )  : {folder}/{filename}")
+                optional.append(model)
 
             elif importance == "recommended":
                 print(f"[{i:2}] -  + recommended + : {folder}/{filename}")
                 recommended.append(model)
 
-            elif importance == "optional":
-                print(f"[{i:2}] -   ( optional )  : {folder}/{filename}")
-                optional.append(model)
+            elif importance == "required":
+                print(f"[{i:2}] - *** required *** : {folder}/{filename}")
+                required.append(model)
 
     return required, recommended, optional, ids
 
@@ -525,10 +520,7 @@ def do_install():
         return False
 
     print("")
-    if not install_models():
-        return False
-
-    return True
+    return bool(install_models())
 
 
 # -----==========-----

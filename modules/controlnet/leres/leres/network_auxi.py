@@ -33,21 +33,17 @@ class Decoder(nn.Module):
         
     def _init_params(self):
         for m in self.modules():
-            if isinstance(m, nn.Conv2d):
-                init.normal_(m.weight, std=0.01)
-                if m.bias is not None:
-                    init.constant_(m.bias, 0)
-            elif isinstance(m, nn.ConvTranspose2d):
+            if (
+                isinstance(m, (nn.Conv2d, nn.ConvTranspose2d))
+                or not isinstance(m, nn.BatchNorm2d)
+                and isinstance(m, nn.Linear)
+            ):
                 init.normal_(m.weight, std=0.01)
                 if m.bias is not None:
                     init.constant_(m.bias, 0)
             elif isinstance(m, nn.BatchNorm2d): #NN.BatchNorm2d
                 init.constant_(m.weight, 1)
                 init.constant_(m.bias, 0)
-            elif isinstance(m, nn.Linear):
-                init.normal_(m.weight, std=0.01)
-                if m.bias is not None:
-                    init.constant_(m.bias, 0)
                     
     def forward(self, features):
         x_32x = self.conv(features[3])  # 1/32
@@ -57,9 +53,7 @@ class Decoder(nn.Module):
         x_8 = self.ffm2(features[2], x_16)  # 1/8
         x_4 = self.ffm1(features[1], x_8)  # 1/4
         x_2 = self.ffm0(features[0], x_4)  # 1/2
-        #-----------------------------------------
-        x = self.outconv(x_2)  # original size
-        return x
+        return self.outconv(x_2)
 
 class DepthNet(nn.Module):
     __factory = {
@@ -125,23 +119,17 @@ class FTB(nn.Module):
 
     def init_params(self):
         for m in self.modules():
-            if isinstance(m, nn.Conv2d):
+            if (
+                isinstance(m, (nn.Conv2d, nn.ConvTranspose2d))
+                or not isinstance(m, nn.BatchNorm2d)
+                and isinstance(m, nn.Linear)
+            ):
                 init.normal_(m.weight, std=0.01)
-                if m.bias is not None:
-                    init.constant_(m.bias, 0)
-            elif isinstance(m, nn.ConvTranspose2d):
-                # init.kaiming_normal_(m.weight, mode='fan_out')
-                init.normal_(m.weight, std=0.01)
-                # init.xavier_normal_(m.weight)
                 if m.bias is not None:
                     init.constant_(m.bias, 0)
             elif isinstance(m, nn.BatchNorm2d):  # NN.BatchNorm2d
                 init.constant_(m.weight, 1)
                 init.constant_(m.bias, 0)
-            elif isinstance(m, nn.Linear):
-                init.normal_(m.weight, std=0.01)
-                if m.bias is not None:
-                    init.constant_(m.bias, 0)
 
 
 class ATA(nn.Module):
@@ -167,15 +155,9 @@ class ATA(nn.Module):
 
     def init_params(self):
         for m in self.modules():
-            if isinstance(m, nn.Conv2d):
+            if isinstance(m, (nn.Conv2d, nn.ConvTranspose2d)):
                 # init.kaiming_normal_(m.weight, mode='fan_out')
                 # init.normal(m.weight, std=0.01)
-                init.xavier_normal_(m.weight)
-                if m.bias is not None:
-                    init.constant_(m.bias, 0)
-            elif isinstance(m, nn.ConvTranspose2d):
-                # init.kaiming_normal_(m.weight, mode='fan_out')
-                # init.normal_(m.weight, std=0.01)
                 init.xavier_normal_(m.weight)
                 if m.bias is not None:
                     init.constant_(m.bias, 0)
@@ -214,13 +196,11 @@ class FFM(nn.Module):
 
     def init_params(self):
         for m in self.modules():
-            if isinstance(m, nn.Conv2d):
-                # init.kaiming_normal_(m.weight, mode='fan_out')
-                init.normal_(m.weight, std=0.01)
-                # init.xavier_normal_(m.weight)
-                if m.bias is not None:
-                    init.constant_(m.bias, 0)
-            elif isinstance(m, nn.ConvTranspose2d):
+            if (
+                isinstance(m, (nn.Conv2d, nn.ConvTranspose2d))
+                or not isinstance(m, nn.BatchNorm2d)
+                and isinstance(m, nn.Linear)
+            ):
                 # init.kaiming_normal_(m.weight, mode='fan_out')
                 init.normal_(m.weight, std=0.01)
                 # init.xavier_normal_(m.weight)
@@ -229,10 +209,6 @@ class FFM(nn.Module):
             elif isinstance(m, nn.BatchNorm2d):  # NN.Batchnorm2d
                 init.constant_(m.weight, 1)
                 init.constant_(m.bias, 0)
-            elif isinstance(m, nn.Linear):
-                init.normal_(m.weight, std=0.01)
-                if m.bias is not None:
-                    init.constant_(m.bias, 0)
 
 
 class AO(nn.Module):
@@ -260,13 +236,11 @@ class AO(nn.Module):
 
     def init_params(self):
         for m in self.modules():
-            if isinstance(m, nn.Conv2d):
-                # init.kaiming_normal_(m.weight, mode='fan_out')
-                init.normal_(m.weight, std=0.01)
-                # init.xavier_normal_(m.weight)
-                if m.bias is not None:
-                    init.constant_(m.bias, 0)
-            elif isinstance(m, nn.ConvTranspose2d):
+            if (
+                isinstance(m, (nn.Conv2d, nn.ConvTranspose2d))
+                or not isinstance(m, nn.BatchNorm2d)
+                and isinstance(m, nn.Linear)
+            ):
                 # init.kaiming_normal_(m.weight, mode='fan_out')
                 init.normal_(m.weight, std=0.01)
                 # init.xavier_normal_(m.weight)
@@ -275,10 +249,6 @@ class AO(nn.Module):
             elif isinstance(m, nn.BatchNorm2d):  # NN.Batchnorm2d
                 init.constant_(m.weight, 1)
                 init.constant_(m.bias, 0)
-            elif isinstance(m, nn.Linear):
-                init.normal_(m.weight, std=0.01)
-                if m.bias is not None:
-                    init.constant_(m.bias, 0)
 
 
 
@@ -309,13 +279,11 @@ class ResidualConv(nn.Module):
 
     def init_params(self):
         for m in self.modules():
-            if isinstance(m, nn.Conv2d):
-                # init.kaiming_normal_(m.weight, mode='fan_out')
-                init.normal_(m.weight, std=0.01)
-                # init.xavier_normal_(m.weight)
-                if m.bias is not None:
-                    init.constant_(m.bias, 0)
-            elif isinstance(m, nn.ConvTranspose2d):
+            if (
+                isinstance(m, (nn.Conv2d, nn.ConvTranspose2d))
+                or not isinstance(m, nn.BatchNorm2d)
+                and isinstance(m, nn.Linear)
+            ):
                 # init.kaiming_normal_(m.weight, mode='fan_out')
                 init.normal_(m.weight, std=0.01)
                 # init.xavier_normal_(m.weight)
@@ -324,10 +292,6 @@ class ResidualConv(nn.Module):
             elif isinstance(m, nn.BatchNorm2d):  # NN.BatchNorm2d
                 init.constant_(m.weight, 1)
                 init.constant_(m.bias, 0)
-            elif isinstance(m, nn.Linear):
-                init.normal_(m.weight, std=0.01)
-                if m.bias is not None:
-                    init.constant_(m.bias, 0)
 
 
 class FeatureFusion(nn.Module):
@@ -346,13 +310,11 @@ class FeatureFusion(nn.Module):
 
     def init_params(self):
         for m in self.modules():
-            if isinstance(m, nn.Conv2d):
-                # init.kaiming_normal_(m.weight, mode='fan_out')
-                init.normal_(m.weight, std=0.01)
-                # init.xavier_normal_(m.weight)
-                if m.bias is not None:
-                    init.constant_(m.bias, 0)
-            elif isinstance(m, nn.ConvTranspose2d):
+            if (
+                isinstance(m, (nn.Conv2d, nn.ConvTranspose2d))
+                or not isinstance(m, nn.BatchNorm2d)
+                and isinstance(m, nn.Linear)
+            ):
                 # init.kaiming_normal_(m.weight, mode='fan_out')
                 init.normal_(m.weight, std=0.01)
                 # init.xavier_normal_(m.weight)
@@ -361,10 +323,6 @@ class FeatureFusion(nn.Module):
             elif isinstance(m, nn.BatchNorm2d):  # NN.BatchNorm2d
                 init.constant_(m.weight, 1)
                 init.constant_(m.bias, 0)
-            elif isinstance(m, nn.Linear):
-                init.normal_(m.weight, std=0.01)
-                if m.bias is not None:
-                    init.constant_(m.bias, 0)
 
 
 class SenceUnderstand(nn.Module):
@@ -394,12 +352,7 @@ class SenceUnderstand(nn.Module):
 
     def initial_params(self, dev=0.01):
         for m in self.modules():
-            if isinstance(m, nn.Conv2d):
-                # print torch.sum(m.weight)
-                m.weight.data.normal_(0, dev)
-                if m.bias is not None:
-                    m.bias.data.fill_(0)
-            elif isinstance(m, nn.ConvTranspose2d):
+            if isinstance(m, (nn.Conv2d, nn.ConvTranspose2d)):
                 # print torch.sum(m.weight)
                 m.weight.data.normal_(0, dev)
                 if m.bias is not None:

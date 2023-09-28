@@ -36,7 +36,7 @@ from .ui import UI
 
 class SeargeDebugPrinter:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {
             "required": {
                 "enabled": ("BOOLEAN", {"default": True},),
@@ -59,7 +59,7 @@ class SeargeDebugPrinter:
         if data is None or not enabled:
             return (data,)
 
-        prefix = "" if prefix is None or len(prefix) < 1 else prefix + ": "
+        prefix = "" if prefix is None or len(prefix) < 1 else f"{prefix}: "
 
         indent_spaces = "· "
 
@@ -91,7 +91,7 @@ class SeargeDebugPrinter:
 
             if v is None:
                 print(prefix + spaces + key + 'None,')
-            elif isinstance(v, int) or isinstance(v, float):
+            elif isinstance(v, (int, float)):
                 print(prefix + spaces + key + str(v) + ',')
             elif isinstance(v, str):
                 print(prefix + spaces + key + '"' + v + '",')
@@ -114,13 +114,17 @@ class SeargeDebugPrinter:
             else:
                 print(prefix + spaces + key + str(type(v)))
 
-        print(prefix + "===============================================================================")
+        print(
+            f"{prefix}==============================================================================="
+        )
         if not isinstance(data, dict):
-            print(prefix + " ! invalid data stream !")
+            print(f"{prefix} ! invalid data stream !")
         else:
-            print(prefix + "* DATA STREAM *")
-            print(prefix + "---------------")
+            print(f"{prefix}* DATA STREAM *")
+            print(f"{prefix}---------------")
             print_val("data", data)
-        print(prefix + "===============================================================================")
+        print(
+            f"{prefix}==============================================================================="
+        )
 
         return (data,)

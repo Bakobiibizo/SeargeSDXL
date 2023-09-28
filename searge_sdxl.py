@@ -26,6 +26,7 @@ SOFTWARE.
 
 """
 
+
 from .modules.prompt_text_input import SeargeTextInputV2
 from .modules.prompt_adapter import SeargePromptAdapterV2
 from .modules.image_adapter import SeargeImageAdapterV2
@@ -70,37 +71,32 @@ from .modules.debug_printer import SeargeDebugPrinter
 # ====================================================================================================
 
 SEARGE_CLASS_MAPPINGS = {
-    f"SeargeTextInputV2": SeargeTextInputV2,
-    f"SeargePromptAdapterV2": SeargePromptAdapterV2,
-    f"SeargeImageAdapterV2": SeargeImageAdapterV2,
-    f"SeargeControlnetAdapterV2": SeargeControlnetAdapterV2,
-
-    f"SeargeSeparator": SeargeSeparator,
-    f"SeargePreviewImage": SeargePreviewImage,
-
-    f"SeargeAdvancedParameters": SeargeAdvancedParameters,
-    f"SeargeConditioningParameters": SeargeConditioningParameters,
-    f"SeargeConditionMixing": SeargeConditionMixing,
-    f"SeargeControlnetModels": SeargeControlnetModels,
-    f"SeargeCustomPromptMode": SeargeCustomPromptMode,
-    f"SeargeGenerationParameters": SeargeGenerationParameters,
-    f"SeargeHighResolution": SeargeHighResolution,
-    f"SeargeImage2ImageAndInpainting": SeargeImage2ImageAndInpainting,
-    f"SeargeImageSaving": SeargeImageSaving,
-    f"SeargeLoras": SeargeLoras,
-    f"SeargeModelSelector": SeargeModelSelector,
-    f"SeargeOperatingMode": SeargeOperatingMode,
-    f"SeargePromptStyles": SeargePromptStyles,
-    f"SeargeUpscaleModels": SeargeUpscaleModels,
-
-    f"SeargeMagicBox": SeargeMagicBox,
-    f"SeargePipelineStart": SeargePipelineStart,
-    f"SeargePipelineTerminator": SeargePipelineTerminator,
-
-    f"SeargeCustomAfterVaeDecode": SeargeCustomAfterVaeDecode,
-    f"SeargeCustomAfterUpscaling": SeargeCustomAfterUpscaling,
-
-    f"SeargeDebugPrinter": SeargeDebugPrinter,
+    "SeargeTextInputV2": SeargeTextInputV2,
+    "SeargePromptAdapterV2": SeargePromptAdapterV2,
+    "SeargeImageAdapterV2": SeargeImageAdapterV2,
+    "SeargeControlnetAdapterV2": SeargeControlnetAdapterV2,
+    "SeargeSeparator": SeargeSeparator,
+    "SeargePreviewImage": SeargePreviewImage,
+    "SeargeAdvancedParameters": SeargeAdvancedParameters,
+    "SeargeConditioningParameters": SeargeConditioningParameters,
+    "SeargeConditionMixing": SeargeConditionMixing,
+    "SeargeControlnetModels": SeargeControlnetModels,
+    "SeargeCustomPromptMode": SeargeCustomPromptMode,
+    "SeargeGenerationParameters": SeargeGenerationParameters,
+    "SeargeHighResolution": SeargeHighResolution,
+    "SeargeImage2ImageAndInpainting": SeargeImage2ImageAndInpainting,
+    "SeargeImageSaving": SeargeImageSaving,
+    "SeargeLoras": SeargeLoras,
+    "SeargeModelSelector": SeargeModelSelector,
+    "SeargeOperatingMode": SeargeOperatingMode,
+    "SeargePromptStyles": SeargePromptStyles,
+    "SeargeUpscaleModels": SeargeUpscaleModels,
+    "SeargeMagicBox": SeargeMagicBox,
+    "SeargePipelineStart": SeargePipelineStart,
+    "SeargePipelineTerminator": SeargePipelineTerminator,
+    "SeargeCustomAfterVaeDecode": SeargeCustomAfterVaeDecode,
+    "SeargeCustomAfterUpscaling": SeargeCustomAfterUpscaling,
+    "SeargeDebugPrinter": SeargeDebugPrinter,
 }
 
 # SEARGE_CLASS_MAPPINGS = SEARGE_CLASS_MAPPINGS | {
@@ -116,37 +112,32 @@ SEARGE_CLASS_MAPPINGS = {
 # ====================================================================================================
 
 SEARGE_DISPLAY_NAME_MAPPINGS = {
-    f"SeargeTextInputV2": "Text Input v2",
-    f"SeargePromptAdapterV2": "Prompt Adapter v2",
-    f"SeargeImageAdapterV2": "Image Adapter v2",
-    f"SeargeControlnetAdapterV2": "Controlnet Adapter v2",
-
-    f"SeargeSeparator": "Separator",
-    f"SeargePreviewImage": "SeargePreviewImage",
-
-    f"SeargeAdvancedParameters": "Advanced Parameters v2",
-    f"SeargeConditioningParameters": "Conditioning Parameters v2",
-    f"SeargeConditionMixing": "Condition Mixing v2",
-    f"SeargeControlnetModels": "Controlnet Models Selector v2",
-    f"SeargeCustomPromptMode": "Custom Prompt Mode v2",
-    f"SeargeGenerationParameters": "Generation Parameters v2",
-    f"SeargeHighResolution": "High Resolution v2",
-    f"SeargeImage2ImageAndInpainting": "Image to Image and Inpainting v2",
-    f"SeargeImageSaving": "Image Saving v2",
-    f"SeargeLoras": "Lora Selector v2",
-    f"SeargeModelSelector": "Model Selector v2",
-    f"SeargeOperatingMode": "Operating Mode v2",
-    f"SeargePromptStyles": "Prompt Styles v2",
-    f"SeargeUpscaleModels": "Upscale Models Selector v2",
-
-    f"SeargeMagicBox": "Searge's Magic Box for SDXL",
-    f"SeargePipelineStart": "Magic Box Pipeline Start",
-    f"SeargePipelineTerminator": "Magic Box Pipeline Terminator",
-
-    f"SeargeCustomAfterVaeDecode": "After VAE Decode",
-    f"SeargeCustomAfterUpscaling": "After Upscaling",
-
-    f"SeargeDebugPrinter": "Debug Printer",
+    "SeargeTextInputV2": "Text Input v2",
+    "SeargePromptAdapterV2": "Prompt Adapter v2",
+    "SeargeImageAdapterV2": "Image Adapter v2",
+    "SeargeControlnetAdapterV2": "Controlnet Adapter v2",
+    "SeargeSeparator": "Separator",
+    "SeargePreviewImage": "SeargePreviewImage",
+    "SeargeAdvancedParameters": "Advanced Parameters v2",
+    "SeargeConditioningParameters": "Conditioning Parameters v2",
+    "SeargeConditionMixing": "Condition Mixing v2",
+    "SeargeControlnetModels": "Controlnet Models Selector v2",
+    "SeargeCustomPromptMode": "Custom Prompt Mode v2",
+    "SeargeGenerationParameters": "Generation Parameters v2",
+    "SeargeHighResolution": "High Resolution v2",
+    "SeargeImage2ImageAndInpainting": "Image to Image and Inpainting v2",
+    "SeargeImageSaving": "Image Saving v2",
+    "SeargeLoras": "Lora Selector v2",
+    "SeargeModelSelector": "Model Selector v2",
+    "SeargeOperatingMode": "Operating Mode v2",
+    "SeargePromptStyles": "Prompt Styles v2",
+    "SeargeUpscaleModels": "Upscale Models Selector v2",
+    "SeargeMagicBox": "Searge's Magic Box for SDXL",
+    "SeargePipelineStart": "Magic Box Pipeline Start",
+    "SeargePipelineTerminator": "Magic Box Pipeline Terminator",
+    "SeargeCustomAfterVaeDecode": "After VAE Decode",
+    "SeargeCustomAfterUpscaling": "After Upscaling",
+    "SeargeDebugPrinter": "Debug Printer",
 }
 
 # SEARGE_DISPLAY_NAME_MAPPINGS = SEARGE_DISPLAY_NAME_MAPPINGS | {

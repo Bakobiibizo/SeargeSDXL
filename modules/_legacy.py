@@ -52,7 +52,7 @@ from .custom_sdxl_ksampler import sdxl_ksampler
 
 class SeargeSDXLSampler:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "base_model": ("MODEL",),
             "base_positive": ("CONDITIONING",),
@@ -105,7 +105,7 @@ class SeargeSDXLSampler:
 
 class SeargeSDXLSamplerV3:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "base_model": ("MODEL",),
             "base_positive": ("CONDITIONING",),
@@ -176,7 +176,7 @@ class SeargeSDXLSamplerV3:
 
 class SeargeSDXLImage2ImageSampler:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "base_model": ("MODEL",),
             "base_positive": ("CONDITIONING",),
@@ -221,9 +221,7 @@ class SeargeSDXLImage2ImageSampler:
         if refiner_strength is None:
             refiner_strength = 1.0
 
-        if refiner_strength < 0.01:
-            refiner_strength = 0.01
-
+        refiner_strength = max(refiner_strength, 0.01)
         if steps < 1:
             return (image,)
 
@@ -285,7 +283,7 @@ class SeargeSDXLImage2ImageSampler:
 
 class SeargeSDXLSampler2:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "base_model": ("MODEL",),
             "base_positive": ("CONDITIONING",),
@@ -326,9 +324,7 @@ class SeargeSDXLSampler2:
         if refiner_strength is None:
             refiner_strength = 1.0
 
-        if refiner_strength < 0.01:
-            refiner_strength = 0.01
-
+        refiner_strength = max(refiner_strength, 0.01)
         if denoise < 0.01:
             return (latent_image,)
 
@@ -370,7 +366,7 @@ class SeargeSDXLSampler2:
 
 class SeargeSDXLImage2ImageSampler2:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "base_model": ("MODEL",),
             "base_positive": ("CONDITIONING",),
@@ -415,9 +411,7 @@ class SeargeSDXLImage2ImageSampler2:
         if refiner_strength is None:
             refiner_strength = 1.0
 
-        if refiner_strength < 0.01:
-            refiner_strength = 0.01
-
+        refiner_strength = max(refiner_strength, 0.01)
         if steps < 1:
             return (image,)
 
@@ -495,7 +489,7 @@ class SeargeParameterProcessor:
     SAVE_TO = ["output folder", "input folder"]
 
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "inputs": ("PARAMETER_INPUTS",),
         },
@@ -508,11 +502,7 @@ class SeargeParameterProcessor:
     CATEGORY = "Searge/_deprecated_/UI"
 
     def process(self, inputs):
-        if inputs is None:
-            parameters = {}
-        else:
-            parameters = inputs
-
+        parameters = {} if inputs is None else inputs
         if parameters["denoise"] is None:
             parameters["denoise"] = 1.0
 
@@ -551,21 +541,12 @@ class SeargeParameterProcessor:
 
         style_template = parameters["style_template"]
         if style_template is not None:
-            # "from preprocessor"
-            if style_template == SeargeParameterProcessor.STYLE_TEMPLATE[1]:
-                # this does nothing here, but will be used in the preprocessor
-                pass
             # "test"
             if style_template == SeargeParameterProcessor.STYLE_TEMPLATE[2]:
                 if parameters["noise_offset"] is not None:
                     parameters["noise_offset"] = 1 - parameters["hrf_noise_offset"]
                 if parameters["hrf_noise_offset"] is not None:
                     parameters["hrf_noise_offset"] = 1 - parameters["hrf_noise_offset"]
-            # incl. SeargeParameterProcessor.STYLE_TEMPLATE[0] -> "none"
-            else:
-                # TODO: apply style based on its name here...
-                pass
-
         operation_mode = parameters["operation_mode"]
         if operation_mode is not None:
             # "image to image":
@@ -643,12 +624,8 @@ class SeargeParameterProcessor:
                 # HACK: this is a bit dirty, but the variable hires_fix determines if the image should be saved
                 #       but when image saving is disabled, we don't want that to happen
                 parameters["hires_fix"] = SeargeParameterProcessor.STATES[0]
-            # "enabled"
-            else:
-                # in case we are saving to the input folder, we need to enable saving after the hires fix, even
-                # if that's disabled in the settings
-                if parameters["save_directory"] == SeargeParameterProcessor.SAVE_TO[1]:
-                    parameters["hires_fix"] = SeargeParameterProcessor.STATES[1]
+            elif parameters["save_directory"] == SeargeParameterProcessor.SAVE_TO[1]:
+                parameters["hires_fix"] = SeargeParameterProcessor.STATES[1]
 
         return (parameters,)
 
@@ -660,7 +637,7 @@ class SeargeParameterProcessor:
 class SeargeStylePreprocessor:
 
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "inputs": ("PARAMETER_INPUTS",),
             "active_style_name": ("STRING", {"multiline": False, "default": ""}),
@@ -679,12 +656,6 @@ class SeargeStylePreprocessor:
             inputs = {}
 
         style_template = inputs["style_template"]
-        # not "from preprocessor"
-        if style_template is None or style_template != SeargeParameterProcessor.STYLE_TEMPLATE[1]:
-            return (inputs,)
-
-        # TODO: do what needs to be done to apply the selected style
-
         return (inputs,)
 
 
@@ -694,7 +665,7 @@ class SeargeStylePreprocessor:
 
 class SeargeInput1:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "main_prompt": ("STRING", {"multiline": True, "default": ""}),
             "secondary_prompt": ("STRING", {"multiline": True, "default": ""}),
@@ -718,11 +689,7 @@ class SeargeInput1:
     def mux(self, main_prompt, secondary_prompt, style_prompt, negative_prompt, negative_style, inputs=None,
             image=None, mask=None):
 
-        if inputs is None:
-            parameters = {}
-        else:
-            parameters = inputs
-
+        parameters = {} if inputs is None else inputs
         parameters["main_prompt"] = main_prompt
         parameters["secondary_prompt"] = secondary_prompt
         parameters["style_prompt"] = style_prompt
@@ -740,7 +707,7 @@ class SeargeInput1:
 
 class SeargeInput2:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
             "image_width": ("INT", {"default": 1024, "min": 0, "max": nodes.MAX_RESOLUTION, "step": 8}),
@@ -767,11 +734,7 @@ class SeargeInput2:
     def mux(self, seed, image_width, image_height, steps, cfg, sampler_name, scheduler, save_image, save_directory,
             inputs=None):
 
-        if inputs is None:
-            parameters = {}
-        else:
-            parameters = inputs
-
+        parameters = {} if inputs is None else inputs
         parameters["seed"] = seed
         parameters["image_width"] = image_width
         parameters["image_height"] = image_height
@@ -791,7 +754,7 @@ class SeargeInput2:
 
 class SeargeInput3:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "base_ratio": ("FLOAT", {"default": 0.8, "min": 0.0, "max": 1.0, "step": 0.01}),
             "refiner_strength": ("FLOAT", {"default": 1.0, "min": 0.1, "max": 1.0, "step": 0.05}),
@@ -817,11 +780,7 @@ class SeargeInput3:
     def mux(self, base_ratio, refiner_strength, refiner_intensity, precondition_steps, batch_size,
             upscale_resolution_factor, save_upscaled_image, inputs=None, denoise=None):
 
-        if inputs is None:
-            parameters = {}
-        else:
-            parameters = inputs
-
+        parameters = {} if inputs is None else inputs
         parameters["denoise"] = denoise
         parameters["base_ratio"] = base_ratio
         parameters["refiner_strength"] = refiner_strength
@@ -840,7 +799,7 @@ class SeargeInput3:
 
 class SeargeInput4:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "base_model": (folder_paths.get_filename_list("checkpoints"),),
             "refiner_model": (folder_paths.get_filename_list("checkpoints"),),
@@ -863,11 +822,7 @@ class SeargeInput4:
     def mux(self, base_model, refiner_model, vae_model, main_upscale_model, support_upscale_model, lora_model,
             model_settings=None):
 
-        if model_settings is None:
-            model_names = {}
-        else:
-            model_names = model_settings
-
+        model_names = {} if model_settings is None else model_settings
         model_names["base_model"] = base_model
         model_names["refiner_model"] = refiner_model
         model_names["vae_model"] = vae_model
@@ -884,7 +839,7 @@ class SeargeInput4:
 
 class SeargeInput5:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "base_conditioning_scale": ("FLOAT", {"default": 2.0, "min": 0.25, "max": 4.0, "step": 0.25}),
             "refiner_conditioning_scale": ("FLOAT", {"default": 2.0, "min": 0.25, "max": 4.0, "step": 0.25}),
@@ -907,11 +862,7 @@ class SeargeInput5:
     def mux(self, base_conditioning_scale, refiner_conditioning_scale, style_prompt_power, negative_style_power,
             style_template, inputs=None):
 
-        if inputs is None:
-            parameters = {}
-        else:
-            parameters = inputs
-
+        parameters = {} if inputs is None else inputs
         parameters["base_conditioning_scale"] = base_conditioning_scale
         parameters["refiner_conditioning_scale"] = refiner_conditioning_scale
         parameters["style_prompt_power"] = style_prompt_power
@@ -927,7 +878,7 @@ class SeargeInput5:
 
 class SeargeInput6:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "hires_fix": (SeargeParameterProcessor.STATES, {"default": SeargeParameterProcessor.STATES[1]}),
             "hrf_steps": ("INT", {"default": 0, "min": 0, "max": 100}),
@@ -953,11 +904,7 @@ class SeargeInput6:
     def mux(self, hires_fix, hrf_steps, hrf_denoise, hrf_upscale_factor, hrf_intensity, hrf_seed_offset,
             hrf_smoothness, inputs=None):
 
-        if inputs is None:
-            parameters = {}
-        else:
-            parameters = inputs
-
+        parameters = {} if inputs is None else inputs
         parameters["hires_fix"] = hires_fix
         parameters["hrf_steps"] = hrf_steps
         parameters["hrf_denoise"] = hrf_denoise
@@ -975,7 +922,7 @@ class SeargeInput6:
 
 class SeargeInput7:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "lora_strength": ("FLOAT", {"default": 0.2, "min": -10.0, "max": 10.0, "step": 0.05}),
             "operation_mode": (SeargeParameterProcessor.OPERATION_MODE,
@@ -995,11 +942,7 @@ class SeargeInput7:
     CATEGORY = "Searge/_deprecated_/UI/Inputs"
 
     def mux(self, lora_strength, operation_mode, prompt_style, inputs=None):
-        if inputs is None:
-            parameters = {}
-        else:
-            parameters = inputs
-
+        parameters = {} if inputs is None else inputs
         parameters["lora_strength"] = lora_strength
         parameters["operation_mode"] = operation_mode
         parameters["prompt_style"] = prompt_style
@@ -1013,7 +956,7 @@ class SeargeInput7:
 
 class SeargeOutput1:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "parameters": ("PARAMETERS",),
         },
@@ -1044,7 +987,7 @@ class SeargeOutput1:
 
 class SeargeOutput2:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "parameters": ("PARAMETERS",),
         },
@@ -1079,7 +1022,7 @@ class SeargeOutput2:
 
 class SeargeOutput3:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "parameters": ("PARAMETERS",),
         },
@@ -1112,7 +1055,7 @@ class SeargeOutput3:
 
 class SeargeOutput4:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "model_names": ("MODEL_NAMES",),
         },
@@ -1144,7 +1087,7 @@ class SeargeOutput4:
 
 class SeargeOutput5:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "parameters": ("PARAMETERS",),
         },
@@ -1173,7 +1116,7 @@ class SeargeOutput5:
 
 class SeargeOutput6:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "parameters": ("PARAMETERS",),
         },
@@ -1205,7 +1148,7 @@ class SeargeOutput6:
 
 class SeargeOutput7:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "parameters": ("PARAMETERS",),
         },
@@ -1229,7 +1172,7 @@ class SeargeOutput7:
 
 class SeargeGenerated1:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "parameters": ("PARAMETERS",),
         },
@@ -1255,7 +1198,7 @@ class SeargeGenerated1:
 
 class SeargeSDXLPromptEncoder:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "base_clip": ("CLIP",),
             "refiner_clip": ("CLIP",),
@@ -1338,7 +1281,7 @@ class SeargeSDXLPromptEncoder:
 
 class SeargeSDXLBasePromptEncoder:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "base_clip": ("CLIP",),
             "pos_g": ("STRING", {"multiline": True, "default": "POS_G"}),
@@ -1402,7 +1345,7 @@ class SeargeSDXLBasePromptEncoder:
 
 class SeargeSDXLRefinerPromptEncoder:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "refiner_clip": ("CLIP",),
             "pos_r": ("STRING", {"multiline": True, "default": "POS_R"}),
@@ -1442,7 +1385,7 @@ class SeargeSDXLRefinerPromptEncoder:
 
 class SeargePromptText:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "prompt": ("STRING", {"default": "", "multiline": True}),
         },
@@ -1462,7 +1405,7 @@ class SeargePromptText:
 
 class SeargePromptCombiner:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "prompt1": ("STRING", {"default": "", "multiline": True}),
             "separator": ("STRING", {"default": ", ", "multiline": False}),
@@ -1495,7 +1438,7 @@ class SeargePromptCombiner:
 
 class SeargeSamplerInputs:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "sampler_name": (comfy.samplers.KSampler.SAMPLERS, {"default": "ddim"}),
             "scheduler": (comfy.samplers.KSampler.SCHEDULERS, {"default": "ddim_uniform"}),
@@ -1518,7 +1461,7 @@ class SeargeSamplerInputs:
 
 class SeargeEnablerInputs:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "state": (SeargeParameterProcessor.STATES, {"default": SeargeParameterProcessor.STATES[1]}),
         },
@@ -1540,7 +1483,7 @@ class SeargeEnablerInputs:
 
 class SeargeSaveFolderInputs:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "save_to": (SeargeParameterProcessor.SAVE_TO, {"default": SeargeParameterProcessor.SAVE_TO[0]}),
         },
@@ -1562,7 +1505,7 @@ class SeargeSaveFolderInputs:
 
 class SeargeIntegerConstant:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "value": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
         },
@@ -1584,7 +1527,7 @@ class SeargeIntegerConstant:
 
 class SeargeIntegerPair:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "value1": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
             "value2": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
@@ -1609,7 +1552,7 @@ class SeargeIntegerMath:
     OPERATIONS = ["a * b + c", "a + c", "a - c", "a * b", "a / b"]
 
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "op": (SeargeIntegerMath.OPERATIONS, {"default": "a * b + c"}),
             "a": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
@@ -1628,15 +1571,15 @@ class SeargeIntegerMath:
         res = 0
         if op == "a * b + c":
             res = a * b + c
+        elif op == "a * b":
+            res = a * b
         elif op == "a + c":
             res = a + c
         elif op == "a - c":
             res = a - c
-        elif op == "a * b":
-            res = a * b
         elif op == "a / b":
             res = a // b
-        return (int(res),)
+        return (res, )
 
 
 # ====================================================================================================
@@ -1645,7 +1588,7 @@ class SeargeIntegerMath:
 
 class SeargeIntegerScaler:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "value": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
             "factor": ("FLOAT", {"default": 1.0, "step": 0.01}),
@@ -1669,7 +1612,7 @@ class SeargeIntegerScaler:
 
 class SeargeFloatConstant:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "value": ("FLOAT", {"default": 0.0, "step": 0.01}),
         },
@@ -1691,7 +1634,7 @@ class SeargeFloatConstant:
 
 class SeargeFloatPair:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "value1": ("FLOAT", {"default": 0.0, "step": 0.01}),
             "value2": ("FLOAT", {"default": 0.0, "step": 0.01}),
@@ -1716,7 +1659,7 @@ class SeargeFloatMath:
     OPERATIONS = ["a * b + c", "a + c", "a - c", "a * b", "a / b"]
 
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "op": (SeargeFloatMath.OPERATIONS, {"default": "a * b + c"}),
             "a": ("FLOAT", {"default": 0.0, "step": 0.01}),
@@ -1752,7 +1695,7 @@ class SeargeFloatMath:
 
 class SeargeImageSave:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {
             "required": {
                 "images": ("IMAGE",),
@@ -1819,7 +1762,7 @@ class SeargeCheckpointLoader:
         self.chkp_loader = nodes.CheckpointLoaderSimple()
 
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "ckpt_name": ("CHECKPOINT_NAME",),
         },
@@ -1843,7 +1786,7 @@ class SeargeVAELoader:
         self.vae_loader = nodes.VAELoader()
 
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "vae_name": ("VAE_NAME",),
         },
@@ -1867,7 +1810,7 @@ class SeargeUpscaleModelLoader:
         self.upscale_model_loader = comfy_extras.nodes_upscale_model.UpscaleModelLoader()
 
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "upscaler_name": ("UPSCALER_NAME",),
         },
@@ -1891,7 +1834,7 @@ class SeargeLoraLoader:
         self.lora_loader = nodes.LoraLoader()
 
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "model": ("MODEL",),
             "clip": ("CLIP",),
@@ -1916,7 +1859,7 @@ class SeargeLoraLoader:
 
 class SeargeLatentMuxer3:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "input0": ("LATENT",),
             "input1": ("LATENT",),
@@ -1946,7 +1889,7 @@ class SeargeLatentMuxer3:
 
 class SeargeConditioningMuxer2:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "input0": ("CONDITIONING",),
             "input1": ("CONDITIONING",),
@@ -1961,10 +1904,7 @@ class SeargeConditioningMuxer2:
     CATEGORY = "Searge/_deprecated_/FlowControl"
 
     def mux(self, input0, input1, input_selector):
-        if input_selector == 1:
-            return (input1,)
-        else:
-            return (input0,)
+        return (input1, ) if input_selector == 1 else (input0, )
 
 
 # ====================================================================================================
@@ -1973,7 +1913,7 @@ class SeargeConditioningMuxer2:
 
 class SeargeConditioningMuxer5:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {"required": {
             "input0": ("CONDITIONING",),
             "input1": ("CONDITIONING",),
